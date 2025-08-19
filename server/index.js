@@ -25,7 +25,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:8080", // Change to your frontend URL in production
+    origin: "https://t-dental-h4u6.onrender.com", // Change to your frontend URL in production
     credentials: true,
   })
 );
