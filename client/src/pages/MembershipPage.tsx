@@ -8,7 +8,7 @@ const MembershipPage = () => {
    const benefits = [
     { 
       icon: "💳", 
-      title: "No-cost EMI", 
+      title: "Discount on DDRC Health packages", 
       description: "For all treatments and services"
     },
     { 
@@ -33,12 +33,12 @@ const MembershipPage = () => {
     },
     { 
       icon: "🎁", 
-      title: "Free Health Kit", 
+      title: "Discounts on PTA screening", 
       description: "Complimentary oral health kit"
     },
     { 
       icon: "🔊", 
-      title: "Free at Home Hearing Aid Testing", 
+      title: "Discounts on at home lab collection", 
       description: "Hearing test and consultation"
     },
     { 
