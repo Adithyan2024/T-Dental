@@ -1,2 +1,2 @@
-const baseUrl=`https://t-dental-lpw1.onrender.com`
+const baseUrl=`https://t-dental.onrender.com`
 export default baseUrl
