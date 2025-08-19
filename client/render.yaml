@@ -1,0 +1,11 @@
+services:
+  - type: static_site
+    name: t-Dental
+    env: node
+    region: oregon  # or change to your preferred region
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production

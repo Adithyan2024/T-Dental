@@ -14,7 +14,6 @@ import notificationRouter from "./Route/notificationRoute.js";
 
 // Middleware
 import authMiddleware from "./middleware/authMiddleware.js";
-import { baseUrl } from "./baseUrl.js";
 
 dotenv.config();
 
