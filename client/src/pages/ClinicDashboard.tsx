@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { clearUser } from "../../redux/slice";
-import {baseUrl} from "../../baseUrl"
+import baseUrl from "../../baseUrl"
 
 
 interface AdmittedUser {
