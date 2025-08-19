@@ -38,7 +38,7 @@ const ModernHero = () => {
             <div className="flex flex-col items-center gap-3 p-6 bg-orange-50 rounded-xl">
               <Calendar className="h-12 w-12 text-orange-600" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">₹1,499</div>
+                <div className="text-2xl font-bold text-gray-900">₹2000</div>
                 <div className="text-sm text-gray-600">Annual Plan</div>
               </div>
             </div>
