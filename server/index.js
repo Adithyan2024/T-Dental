@@ -33,6 +33,8 @@ app.use(
 app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
 app.use("/clinicUploads", express.static(path.join(__dirname, "Uploads/clinicUploads")));
 app.use("/uploads/prescriptions", express.static(path.join(__dirname, "Uploads/prescriptionUploads")));
+const buildPath = path.join(__dirname, "../client/build");
+app.use(express.static(buildPath));
 
 // Global vars for socket
 const connectedUsers = new Map();
