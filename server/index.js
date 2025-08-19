@@ -14,6 +14,7 @@ import notificationRouter from "./Route/notificationRoute.js";
 
 // Middleware
 import authMiddleware from "./middleware/authMiddleware.js";
+import { baseUrl } from "./baseUrl.js";
 
 dotenv.config();
 
@@ -31,8 +32,14 @@ app.use(
 );
 
 app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
-app.use("/clinicUploads", express.static(path.join(__dirname, "Uploads/clinicUploads")));
-app.use("/uploads/prescriptions", express.static(path.join(__dirname, "Uploads/prescriptionUploads")));
+app.use(
+  "/clinicUploads",
+  express.static(path.join(__dirname, "Uploads/clinicUploads"))
+);
+app.use(
+  "/uploads/prescriptions",
+  express.static(path.join(__dirname, "Uploads/prescriptionUploads"))
+);
 const buildPath = path.join(__dirname, "../client/build");
 app.use(express.static(buildPath));
 
@@ -77,16 +84,15 @@ connectDb()
 
     io.on("connection", (socket) => {
       console.log("🟢 New client connected:", socket.id);
-socket.on("register", (userId) => {
-  console.log("Register event received with userId:", userId);
-  if (userId) {
-    const userKey = String(userId).trim();
-    console.log("Storing userKey:", userKey);
-    connectedUsers.set(userKey, socket.id);
-    console.log(`📌 User ${userKey} registered with socket ${socket.id}`);
-  }
-});
-
+      socket.on("register", (userId) => {
+        console.log("Register event received with userId:", userId);
+        if (userId) {
+          const userKey = String(userId).trim();
+          console.log("Storing userKey:", userKey);
+          connectedUsers.set(userKey, socket.id);
+          console.log(`📌 User ${userKey} registered with socket ${socket.id}`);
+        }
+      });
 
       socket.on("disconnect", () => {
         for (const [userId, sockId] of connectedUsers.entries()) {

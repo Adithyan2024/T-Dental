@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { clearUser } from "../../redux/slice";
+import {baseUrl} from "../../baseUrl"
 
 
 interface AdmittedUser {
@@ -87,8 +88,6 @@ const navigate=useNavigate();
  const decoded = jwtDecode<TokenPayload>(clinicToken);
   console.log("Decoded clinic id",decoded);
   
-  // Adjust if you have separate clinic state
-  const baseUrl = "http://localhost:8000"; // Your actual API base URL
 
   useEffect(() => {
     fetchAdmittedUsers();

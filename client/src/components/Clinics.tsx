@@ -148,7 +148,7 @@ const HealthHubClinicServices: React.FC = () => {
   const dispatch = useDispatch();
   const { toast } = useToast();
 
-  const baseUrl = "http://localhost:8000"; // Your actual API base URL
+ // Your actual API base URL
   // const token = userToken?.token;
 
   const serviceData: ServiceData = {

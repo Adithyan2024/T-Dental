@@ -70,7 +70,7 @@ const AdminDashboard: React.FC = () => {
   const [adminNote, setAdminNote] = useState<string>('');
 
   // API Base URL - replace with your actual API base URL
-  const API_BASE_URL = 'http://localhost:8000/api';
+
 const navigate=useNavigate();
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -98,7 +98,7 @@ const navigate=useNavigate();
       setLoading(true);
       setError('');
       
-      const response = await fetch(`${API_BASE_URL}/admin/pending-clinic-requests`, {
+      const response = await fetch(`${baseUrl}/admin/pending-clinic-requests`, {
         method: 'GET',
         headers: createAxiosConfig().headers
       });
@@ -146,7 +146,7 @@ const updateApplicationStatus = async (
       requestData.adminNote = note;
     }
 
-    const response = await fetch(`${API_BASE_URL}/admin/update-status`, {
+    const response = await fetch(`${baseUrl}/admin/update-status`, {
       method: 'PATCH',
       headers: createAxiosConfig().headers,
       body: JSON.stringify(requestData)

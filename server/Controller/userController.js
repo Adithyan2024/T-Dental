@@ -294,7 +294,7 @@ const uploadPharmacyOrLabPrescription = async (req, res) => {
   success: true,
   message: `Prescription uploaded and sent to ${provider.name} successfully`,
   requestId: newRequest._id,
-  prescriptionImageUrl: `http://localhost:8000/uploads/prescriptions/${req.file.filename}`,
+  prescriptionImageUrl: `https://t-dental-lpw1.onrender.com/uploads/prescriptions/${req.file.filename}`,
 });
 
   } catch (error) {
