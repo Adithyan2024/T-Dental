@@ -5,7 +5,7 @@ import path from "path";
 import cors from "cors";
 import { Server } from "socket.io";
 import connectDb from "./mongoDb/connectDb.js";
-import {baseUrl} from "./baseUrl.js"
+import baseUrl from "./baseUrl.js"
 
 // Routers
 import userRouter from "./Route/userRouter.js";
