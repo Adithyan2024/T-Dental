@@ -10,11 +10,11 @@ import {
   Calendar,
   Clock,
 } from "lucide-react";
-import { useSelector,useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "redux/store";
 import axios from "axios";
 import NotificationBell from "./NotificationBell";
-import { baseUrl } from "../../baseUrl";
+import baseUrl from "../../baseUrl";
 import { jwtDecode } from "jwt-decode";
 import { useToast } from "@/hooks/use-toast";
 import { title } from "process";
@@ -43,7 +43,7 @@ interface Clinic {
   phone: string;
   entityType?: string;
   acceptsEMI?: boolean;
-   acceptsInsurance?: boolean;
+  acceptsInsurance?: boolean;
 }
 
 interface Pharmacy {
@@ -141,14 +141,13 @@ const HealthHubClinicServices: React.FC = () => {
     const decoded = jwtDecode<TokenPayload>(userToken);
     console.log("📜 Decoded token payload:", decoded);
     console.log("🆔 Extracted User ID from token:", decoded.id);
-  // setUserDetails(decoded)
-
+    // setUserDetails(decoded)
   }
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { toast } = useToast();
 
- // Your actual API base URL
+  // Your actual API base URL
   // const token = userToken?.token;
 
   const serviceData: ServiceData = {
@@ -673,51 +672,56 @@ const HealthHubClinicServices: React.FC = () => {
         break;
     }
   }, [activeTab]);
-  console.log("🏥 Clinic component rendering...");  
+  console.log("🏥 Clinic component rendering...");
   //user logout
-const handleLogout = async () => {
-  try {
-    if (!userToken) throw new Error("No token found");
-
-    const decoded = jwtDecode<TokenPayload>(userToken);
-    if (!decoded?.id) throw new Error("Invalid token");
-
-    // 1. First clear client-side state immediately
-    dispatch(clearUser());
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-
+  const handleLogout = async () => {
     try {
-      // 2. Then attempt API logout (fire-and-forget)
-      axios.post(`${baseUrl}/api/user/logout`, 
-        { userId: decoded.id },
-        { headers: { Authorization: `Bearer ${userToken}` } }
-      ).catch(apiError => {
-        console.warn("Logout API failed (non-critical)", apiError);
-      });
-    } catch (apiError) {
-      console.warn("Logout API failed", apiError);
-    }
+      if (!userToken) throw new Error("No token found");
 
-    // 3. Finally redirect
-    navigate("/userlog");
-    toast({ title: "Logged out successfully" });
-    
-  } catch (error) {
-    console.error("Logout error:", error);
-    // Ensure cleanup happens even if something failed
-    dispatch(clearUser());
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-    navigate("/userlog");
-    toast({ title: "Logout failed", variant: "destructive" });
-  }
-};
+      const decoded = jwtDecode<TokenPayload>(userToken);
+      if (!decoded?.id) throw new Error("Invalid token");
+
+      // 1. First clear client-side state immediately
+      dispatch(clearUser());
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userData");
+
+      try {
+        // 2. Then attempt API logout (fire-and-forget)
+        axios
+          .post(
+            `${baseUrl}/api/user/logout`,
+            { userId: decoded.id },
+            { headers: { Authorization: `Bearer ${userToken}` } }
+          )
+          .catch((apiError) => {
+            console.warn("Logout API failed (non-critical)", apiError);
+          });
+      } catch (apiError) {
+        console.warn("Logout API failed", apiError);
+      }
+
+      // 3. Finally redirect
+      navigate("/userlog");
+      toast({ title: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Ensure cleanup happens even if something failed
+      dispatch(clearUser());
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userData");
+      navigate("/userlog");
+      toast({ title: "Logout failed", variant: "destructive" });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="p-4">
-        <button className="fixed top-5 right-20 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 z-10" onClick={handleLogout}>
+        <button
+          className="fixed top-5 right-20 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 z-10"
+          onClick={handleLogout}
+        >
           Logout
         </button>
         <NotificationBell />
@@ -818,7 +822,7 @@ const handleLogout = async () => {
                         </div>
                       </div>
 
-                  <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {clinic.acceptsEMI && (
                           <span className="bg-green-100 text-green-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full">
                             💳 EMI Available
@@ -832,136 +836,132 @@ const handleLogout = async () => {
                       </div>
                     </div>
                   ))
-            ) : (
-              <div className="col-span-full text-center py-6 min-[350px]:py-8">
-                <div className="text-gray-500 text-xs min-[350px]:text-sm">
-                  {isLoading
+                ) : (
+                  <div className="col-span-full text-center py-6 min-[350px]:py-8">
+                    <div className="text-gray-500 text-xs min-[350px]:text-sm">
+                      {isLoading
                         ? "Loading..."
                         : "No clinics available at the moment"}
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Pharmacy List */}
-        {activeTab === "Pharmacy" && (
-          <div className="space-y-3 min-[350px]:space-y-4">
-            {isLoading ? (
-              <div className="text-center py-6 min-[350px]:py-8">
-                <div className="animate-spin rounded-full h-6 w-6 min-[350px]:h-8 min-[350px]:w-8 border-b-2 border-blue-600 mx-auto mb-3 min-[350px]:mb-4"></div>
-                <p className="text-xs min-[350px]:text-sm">Loading pharmacies...</p>
-              </div>
-            ) : (getCurrentItems() as Pharmacy[]).length > 0 ? (
-              (getCurrentItems() as Pharmacy[]).map((pharmacy) => (
-                <div
-                     
-                  key={pharmacy._id}
-                     
-                  className="flex flex-col min-[350px]:flex-row items-start min-[350px]:items-center justify-between py-3 min-[350px]:py-4 px-4 min-[350px]:px-6 border border-gray-200 rounded-lg hover:bg-gray-50"
-                    
-                >
-                  <div className="mb-2 min-[350px]:mb-0">
-                    <h3 className="text-base min-[350px]:text-lg font-semibold text-gray-900 line-clamp-1">
-                      
-                          {pharmacy.name}
-                        
-                    </h3>
-                    <div className="flex items-center gap-1 text-xs min-[350px]:text-sm text-gray-600 mt-1">
-                      <MapPin className="w-3 min-[350px]:w-4 h-3 min-[350px]:h-4" />
-                      <span className="line-clamp-1">{pharmacy.location}</span>
-                    </div>
-                    {pharmacy.acceptsEMI && (
-                      <span className="bg-green-100 text-green-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full mt-2 inline-block">
-                        💳 EMI Available
-                      </span>
-                    )}
+            {/* Pharmacy List */}
+            {activeTab === "Pharmacy" && (
+              <div className="space-y-3 min-[350px]:space-y-4">
+                {isLoading ? (
+                  <div className="text-center py-6 min-[350px]:py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 min-[350px]:h-8 min-[350px]:w-8 border-b-2 border-blue-600 mx-auto mb-3 min-[350px]:mb-4"></div>
+                    <p className="text-xs min-[350px]:text-sm">
+                      Loading pharmacies...
+                    </p>
                   </div>
-                  <div className="flex gap-2 min-[350px]:gap-3 w-full min-[350px]:w-auto">
-                    <button
-                      onClick={() => {
-                        console.log("Booking pharmacy:", pharmacy.name);
-                        handleServiceClick(pharmacy);
-                      }}
-                      className="w-full min-[350px]:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 min-[350px]:px-6 py-1.5 min-[350px]:py-2 rounded-lg font-medium transition-colors text-xs min-[350px]:text-sm"
+                ) : (getCurrentItems() as Pharmacy[]).length > 0 ? (
+                  (getCurrentItems() as Pharmacy[]).map((pharmacy) => (
+                    <div
+                      key={pharmacy._id}
+                      className="flex flex-col min-[350px]:flex-row items-start min-[350px]:items-center justify-between py-3 min-[350px]:py-4 px-4 min-[350px]:px-6 border border-gray-200 rounded-lg hover:bg-gray-50"
                     >
-                      BOOK NOW
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-6 min-[350px]:py-8">
-                <div className="text-gray-500 text-xs min-[350px]:text-sm">
-                  {isLoading
+                      <div className="mb-2 min-[350px]:mb-0">
+                        <h3 className="text-base min-[350px]:text-lg font-semibold text-gray-900 line-clamp-1">
+                          {pharmacy.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-xs min-[350px]:text-sm text-gray-600 mt-1">
+                          <MapPin className="w-3 min-[350px]:w-4 h-3 min-[350px]:h-4" />
+                          <span className="line-clamp-1">
+                            {pharmacy.location}
+                          </span>
+                        </div>
+                        {pharmacy.acceptsEMI && (
+                          <span className="bg-green-100 text-green-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full mt-2 inline-block">
+                            💳 EMI Available
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2 min-[350px]:gap-3 w-full min-[350px]:w-auto">
+                        <button
+                          onClick={() => {
+                            console.log("Booking pharmacy:", pharmacy.name);
+                            handleServiceClick(pharmacy);
+                          }}
+                          className="w-full min-[350px]:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 min-[350px]:px-6 py-1.5 min-[350px]:py-2 rounded-lg font-medium transition-colors text-xs min-[350px]:text-sm"
+                        >
+                          BOOK NOW
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 min-[350px]:py-8">
+                    <div className="text-gray-500 text-xs min-[350px]:text-sm">
+                      {isLoading
                         ? "Loading..."
                         : "No pharmacies available at the moment"}
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Laboratory List */}
-        {activeTab === "Laboratory" && (
-          <div className="space-y-3 min-[350px]:space-y-4">
-            {isLoading ? (
-              <div className="text-center py-6 min-[350px]:py-8">
-                <div className="animate-spin rounded-full h-6 w-6 min-[350px]:h-8 min-[350px]:w-8 border-b-2 border-blue-600 mx-auto mb-3 min-[350px]:mb-4"></div>
-                <p className="text-xs min-[350px]:text-sm">Loading laboratories...</p>
-              </div>
-            ) : (getCurrentItems() as Laboratory[]).length > 0 ? (
-              (getCurrentItems() as Laboratory[]).map((lab) => (
-                <div
-                     
-                  key={lab._id}
-                     
-                  className="flex flex-col min-[350px]:flex-row items-start min-[350px]:items-center justify-between py-3 min-[350px]:py-4 px-4 min-[350px]:px-6 border border-gray-200 rounded-lg hover:bg-gray-50"
-                    
-                >
-                  <div className="mb-2 min-[350px]:mb-0">
-                    <h3 className="text-base min-[350px]:text-lg font-semibold text-gray-900 line-clamp-1">
-                      
-                          {lab.name}
-                        
-                    </h3>
-                    <div className="flex items-center gap-1 text-xs min-[350px]:text-sm text-gray-600 mt-1">
-                      <MapPin className="w-3 min-[350px]:w-4 h-3 min-[350px]:h-4" />
-                      <span className="line-clamp-1">{lab.location}</span>
-                    </div>
-                    {lab.acceptsEMI && (
-                      <span className="bg-green-100 text-green-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full mt-2 inline-block">
-                        💳 EMI Available
-                      </span>
-                    )}
+            {/* Laboratory List */}
+            {activeTab === "Laboratory" && (
+              <div className="space-y-3 min-[350px]:space-y-4">
+                {isLoading ? (
+                  <div className="text-center py-6 min-[350px]:py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 min-[350px]:h-8 min-[350px]:w-8 border-b-2 border-blue-600 mx-auto mb-3 min-[350px]:mb-4"></div>
+                    <p className="text-xs min-[350px]:text-sm">
+                      Loading laboratories...
+                    </p>
                   </div>
-                  <div className="flex gap-2 min-[350px]:gap-3 w-full min-[350px]:w-auto">
-                    <button
-                      onClick={() => {
-                        console.log("Booking laboratory:", lab.name);
-                        handleServiceClick(lab);
-                      }}
-                      className="w-full min-[350px]:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 min-[350px]:px-6 py-1.5 min-[350px]:py-2 rounded-lg font-medium transition-colors text-xs min-[350px]:text-sm"
+                ) : (getCurrentItems() as Laboratory[]).length > 0 ? (
+                  (getCurrentItems() as Laboratory[]).map((lab) => (
+                    <div
+                      key={lab._id}
+                      className="flex flex-col min-[350px]:flex-row items-start min-[350px]:items-center justify-between py-3 min-[350px]:py-4 px-4 min-[350px]:px-6 border border-gray-200 rounded-lg hover:bg-gray-50"
                     >
-                      BOOK
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-6 min-[350px]:py-8">
-                <div className="text-gray-500 text-xs min-[350px]:text-sm">
-                  {isLoading
+                      <div className="mb-2 min-[350px]:mb-0">
+                        <h3 className="text-base min-[350px]:text-lg font-semibold text-gray-900 line-clamp-1">
+                          {lab.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-xs min-[350px]:text-sm text-gray-600 mt-1">
+                          <MapPin className="w-3 min-[350px]:w-4 h-3 min-[350px]:h-4" />
+                          <span className="line-clamp-1">{lab.location}</span>
+                        </div>
+                        {lab.acceptsEMI && (
+                          <span className="bg-green-100 text-green-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full mt-2 inline-block">
+                            💳 EMI Available
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2 min-[350px]:gap-3 w-full min-[350px]:w-auto">
+                        <button
+                          onClick={() => {
+                            console.log("Booking laboratory:", lab.name);
+                            handleServiceClick(lab);
+                          }}
+                          className="w-full min-[350px]:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 min-[350px]:px-6 py-1.5 min-[350px]:py-2 rounded-lg font-medium transition-colors text-xs min-[350px]:text-sm"
+                        >
+                          BOOK
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 min-[350px]:py-8">
+                    <div className="text-gray-500 text-xs min-[350px]:text-sm">
+                      {isLoading
                         ? "Loading..."
                         : "No laboratories available at the moment"}
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
-      </div>
-    </main>
-  )}
+        </main>
+      )}
 
       {/* Clinic Consultation Form with Date & Time Picker */}
       {currentView === "consultation" && (
