@@ -98,7 +98,7 @@ const navigate=useNavigate();
       setLoading(true);
       setError('');
       
-      const response = await fetch(`${baseUrl}/admin/pending-clinic-requests`, {
+      const response = await fetch(`${baseUrl}/api/admin/pending-clinic-requests`, {
         method: 'GET',
         headers: createAxiosConfig().headers
       });
