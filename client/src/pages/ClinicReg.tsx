@@ -23,6 +23,7 @@ export default function ClinicRegister() {
   const [acceptsEMI, setAcceptsEMI] = useState(""); // Changed to string for radio buttons
   const [acceptsInsurance, setAcceptsInsurance] = useState(""); // New state for insurance
   const [specializations, setSpecializations] = useState<string[]>([]);
+  const [customSpecialization, setCustomSpecialization] = useState("");
   const [licenseProof, setLicenseProof] = useState<File | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -51,6 +52,7 @@ export default function ClinicRegister() {
     { id: "Pulmonology", icon: "🫁" },
     { id: "Endocrinology", icon: "⚖️" },
     { id: "Rheumatology", icon: "🦴" },
+     { id: "Others", icon: "➕" }, 
   ];
 
   const handleChange = (
@@ -67,67 +69,92 @@ export default function ClinicRegister() {
     setEntityType(type);
   };
 
-  const handleSpecializationChange = (specializationId: string) => {
+ const handleSpecializationChange = (specializationId: string) => {
+  if (specializationId === "Others") {
+    // toggle "Others" selection
+    if (specializations.includes("Others")) {
+      setSpecializations((prev) => prev.filter((id) => id !== "Others"));
+      setCustomSpecialization(""); // reset input when unchecked
+    } else {
+      setSpecializations((prev) => [...prev, "Others"]);
+    }
+  } else {
     setSpecializations((prev) =>
       prev.includes(specializationId)
         ? prev.filter((id) => id !== specializationId)
         : [...prev, specializationId]
     );
-  };
+  }
+};
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const formData = new FormData();
-      formData.append("name", form.name);
-      formData.append("phone", form.phone);
-      formData.append("email", form.email);
-      formData.append("address", form.address);
-      formData.append("location", form.location);
-      formData.append("numberOfDoctors", form.numberOfDoctors);
-      formData.append("password", form.password);
-      formData.append("specializations", JSON.stringify(specializations));
-      formData.append("entityType", entityType);
-      formData.append("acceptsEMI", acceptsEMI); // Now sends "yes" or "no"
-      formData.append("acceptsInsurance", acceptsInsurance); // New insurance field
-      if (licenseProof) formData.append("licenseProof", licenseProof);
+  try {
+    // Clone specializations to avoid mutation
+    let finalSpecializations = [...specializations];
 
-      const res = await axios.post(`${baseUrl}/api/clinic/register`, formData);
-
-      console.log("Entity registered:", res.data);
-      toast({
-        title: "Registration Successful",
-        description: `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} registration successful`,
-      });
-      setForm({
-        name: "",
-        phone: "",
-        email: "",
-        address: "",
-        location: "",
-        numberOfDoctors: "",
-        password: "",
-      });
-      setSpecializations([]);
-      setAcceptsEMI(""); // Reset to empty string
-      setAcceptsInsurance(""); // Reset insurance field
-      setTimeout(() => {
-        navigate("/clinicLog");
-      }, 1000);
-    } catch (err) {
-      console.error("Registration failed:", err.response?.data || err.message);
-      toast({
-        title: "Registration Failed",
-        description: err.response?.data?.message || "Something went wrong",
-        variant: "destructive",
-      });
+    // Replace "Others" with custom text if provided
+    if (finalSpecializations.includes("Others")) {
+      finalSpecializations = finalSpecializations.filter((s) => s !== "Others");
+      if (customSpecialization.trim() !== "") {
+        finalSpecializations.push(customSpecialization.trim());
+      }
     }
-  };
+
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("phone", form.phone);
+    formData.append("email", form.email);
+    formData.append("address", form.address);
+    formData.append("location", form.location);
+    formData.append("numberOfDoctors", form.numberOfDoctors);
+    formData.append("password", form.password);
+    formData.append("specializations", JSON.stringify(finalSpecializations));
+    formData.append("entityType", entityType);
+    formData.append("acceptsEMI", acceptsEMI);
+    formData.append("acceptsInsurance", acceptsInsurance);
+    if (licenseProof) formData.append("licenseProof", licenseProof);
+
+    const res = await axios.post(`${baseUrl}/api/clinic/register`, formData);
+
+    console.log("Entity registered:", res.data);
+    toast({
+      title: "Registration Successful",
+      description: `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} registration successful`,
+    });
+
+    // Reset form
+    setForm({
+      name: "",
+      phone: "",
+      email: "",
+      address: "",
+      location: "",
+      numberOfDoctors: "",
+      password: "",
+    });
+    setSpecializations([]);
+    setCustomSpecialization("");
+    setAcceptsEMI("");
+    setAcceptsInsurance("");
+
+    setTimeout(() => {
+      navigate("/clinicLog");
+    }, 1000);
+  } catch (err) {
+    console.error("Registration failed:", err.response?.data || err.message);
+    toast({
+      title: "Registration Failed",
+      description: err.response?.data?.message || "Something went wrong",
+      variant: "destructive",
+    });
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 py-8">
@@ -233,30 +260,42 @@ export default function ClinicRegister() {
 
         {/* Specializations - Only show for clinic */}
         {entityType === "clinic" && (
-          <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">Select Specializations</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {specializationOptions.map((spec) => (
-                <label
-                  key={spec.id}
-                  className={`flex flex-col items-center p-3 border rounded cursor-pointer ${
-                    specializations.includes(spec.id)
-                      ? "border-green-500 bg-green-100"
-                      : "border-gray-300"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={specializations.includes(spec.id)}
-                    onChange={() => handleSpecializationChange(spec.id)}
-                    className="sr-only"
-                  />
-                  <span className="text-2xl">{spec.icon}</span>
-                  <span className="text-sm text-center">{spec.id}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+       <div className="mb-6">
+  <h3 className="text-lg font-medium mb-3">Select Specializations</h3>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    {specializationOptions.map((spec) => (
+      <label
+        key={spec.id}
+        className={`flex flex-col items-center p-3 border rounded cursor-pointer ${
+          specializations.includes(spec.id)
+            ? "border-green-500 bg-green-100"
+            : "border-gray-300"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={specializations.includes(spec.id)}
+          onChange={() => handleSpecializationChange(spec.id)}
+          className="sr-only"
+        />
+        <span className="text-2xl">{spec.icon}</span>
+        <span className="text-sm text-center">{spec.id}</span>
+      </label>
+    ))}
+  </div>
+
+  {/* Show input if "Others" selected */}
+  {specializations.includes("Others") && (
+    <input
+      type="text"
+      placeholder="Enter your specialization"
+      value={customSpecialization}
+      onChange={(e) => setCustomSpecialization(e.target.value)}
+      className="mt-3 w-full border p-3 rounded"
+    />
+  )}
+</div>
+
         )}
 
         <div className="mb-4">

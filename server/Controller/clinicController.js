@@ -114,21 +114,26 @@ const registerClinic = async (req, res) => {
     };
 
     // Entity-specific fields
-    if (entityType === "clinic") {
-      let parsedSpecializations = [];
-      if (specializations) {
-        try {
-          parsedSpecializations = typeof specializations === "string"
-            ? JSON.parse(specializations)
-            : specializations;
-        } catch (error) {
-          parsedSpecializations = [];
-        }
-      }
+ if (entityType === "clinic") {
+  let specializationArray = [];
 
-      entityData.specializations = parsedSpecializations;
-      entityData.numberOfDoctors = parseInt(numberOfDoctors);
-    } else if (entityType === "pharmacy") {
+  if (Array.isArray(specializations)) {
+    specializationArray = specializations.map((s) => String(s).trim());
+  } else if (typeof specializations === "string") {
+    try {
+      specializationArray = JSON.parse(specializations); 
+      if (!Array.isArray(specializationArray)) {
+        specializationArray = [String(specializations).trim()];
+      }
+    } catch {
+      specializationArray = [String(specializations).trim()];
+    }
+  }
+
+  entityData.specializations = specializationArray;
+  entityData.numberOfDoctors = parseInt(numberOfDoctors);
+}
+ else if (entityType === "pharmacy") {
       if (pharmacyLicense) entityData.pharmacyLicense = pharmacyLicense;
       if (operatingHours) {
         entityData.operatingHours = typeof operatingHours === "string"
@@ -167,7 +172,6 @@ const registerClinic = async (req, res) => {
     });
   }
 };
-
 const createToken = (payload, secret, expiry) => {
   return jwt.sign(payload, secret, { expiresIn: expiry });
 };
