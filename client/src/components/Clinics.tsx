@@ -766,20 +766,22 @@ const HealthHubClinicServices: React.FC = () => {
 
             {/* Hospital/Clinic Cards */}
             {activeTab === "Clinic" && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 min-[500px]:grid-cols-2 md:grid-cols-3 gap-3 min-[400px]:gap-4 md:gap-6">
                 {isLoading ? (
-                  <div className="col-span-full text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    Loading clinics...
+                  <div className="col-span-full text-center py-6 min-[400px]:py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 min-[400px]:h-8 min-[400px]:w-8 border-b-2 border-blue-600 mx-auto mb-3 min-[400px]:mb-4"></div>
+                    <div className="text-xs min-[400px]:text-sm text-gray-600">
+                      Loading clinics...
+                    </div>
                   </div>
                 ) : (getCurrentItems() as Clinic[]).length > 0 ? (
                   (getCurrentItems() as Clinic[]).map((clinic) => (
                     <div
                       key={clinic._id}
-                      className="border border-gray-400 rounded-lg p-6 hover:shadow-md transition-shadow"
+                      className="border border-gray-400 rounded-lg p-3 min-[400px]:p-4 md:p-6 hover:shadow-md transition-shadow"
                     >
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-semibold text-gray-900">
+                      <div className="flex flex-col min-[400px]:flex-row justify-between items-start gap-3 min-[400px]:gap-2 mb-3 min-[400px]:mb-4">
+                        <h3 className="text-base min-[400px]:text-lg md:text-xl font-semibold text-gray-900 leading-tight">
                           {clinic.name}
                         </h3>
                         <button
@@ -787,23 +789,23 @@ const HealthHubClinicServices: React.FC = () => {
                             console.log("Booking clinic:", clinic.name);
                             handleServiceClick(clinic);
                           }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 min-[400px]:px-5 md:px-6 py-1.5 min-[400px]:py-2 rounded-lg text-xs min-[400px]:text-sm font-medium transition-colors w-full min-[400px]:w-auto whitespace-nowrap"
                         >
                           BOOK NOW
                         </button>
                       </div>
 
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">
+                      <div className="mb-3 min-[400px]:mb-4">
+                        <h4 className="text-xs min-[400px]:text-sm font-medium text-gray-700 mb-2 min-[400px]:mb-3">
                           Specializations
                         </h4>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1 min-[400px]:gap-2">
                           {clinic.specializations?.map((spec, index) => (
                             <div
                               key={`${spec}-${index}`}
-                              className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-full px-3 py-1"
+                              className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-full px-2 min-[400px]:px-3 py-0.5 min-[400px]:py-1"
                             >
-                              <span className="text-xs font-medium text-blue-700">
+                              <span className="text-[10px] min-[400px]:text-xs font-medium text-blue-700 leading-tight">
                                 {spec}
                               </span>
                             </div>
@@ -811,25 +813,27 @@ const HealthHubClinicServices: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                      <div className="flex flex-col min-[400px]:flex-row min-[400px]:items-center gap-2 min-[400px]:gap-4 text-xs min-[400px]:text-sm text-gray-600 mb-3">
                         <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          <span>{clinic.numberOfDoctors} Doctors</span>
+                          <Users className="w-3 h-3 min-[400px]:w-4 min-[400px]:h-4 flex-shrink-0" />
+                          <span className="truncate">
+                            {clinic.numberOfDoctors} Doctors
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4" />
-                          <span>{clinic.location}</span>
+                          <MapPin className="w-3 h-3 min-[400px]:w-4 min-[400px]:h-4 flex-shrink-0" />
+                          <span className="truncate">{clinic.location}</span>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1 min-[400px]:gap-2">
                         {clinic.acceptsEMI && (
-                          <span className="bg-green-100 text-green-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full">
+                          <span className="bg-green-100 text-green-800 text-[9px] min-[400px]:text-[10px] min-[500px]:text-xs font-medium px-1.5 min-[400px]:px-2 py-0.5 rounded-full">
                             💳 EMI Available
                           </span>
                         )}
                         {clinic.acceptsInsurance && (
-                          <span className="bg-blue-100 text-blue-800 text-[10px] min-[350px]:text-xs font-medium px-1.5 min-[350px]:px-2 py-0.5 rounded-full">
+                          <span className="bg-blue-100 text-blue-800 text-[9px] min-[400px]:text-[10px] min-[500px]:text-xs font-medium px-1.5 min-[400px]:px-2 py-0.5 rounded-full">
                             🛡️ Insurance Accepted
                           </span>
                         )}
@@ -837,8 +841,8 @@ const HealthHubClinicServices: React.FC = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="col-span-full text-center py-6 min-[350px]:py-8">
-                    <div className="text-gray-500 text-xs min-[350px]:text-sm">
+                  <div className="col-span-full text-center py-6 min-[400px]:py-8">
+                    <div className="text-gray-500 text-xs min-[400px]:text-sm">
                       {isLoading
                         ? "Loading..."
                         : "No clinics available at the moment"}
@@ -847,7 +851,6 @@ const HealthHubClinicServices: React.FC = () => {
                 )}
               </div>
             )}
-
             {/* Pharmacy List */}
             {activeTab === "Pharmacy" && (
               <div className="space-y-3 min-[350px]:space-y-4">
